@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import healthRoutes from './routes/healthRoutes.js';
+import authRoutes from './routes/auth.routes.js';
 import { notFound } from './middleware/notFoundMiddleware.js';
 import { errorHandler } from './middleware/errorMiddleware.js';
 
@@ -12,6 +13,7 @@ app.use(express.json());
 
 // API Versioning & Route Registration
 app.use('/api/v1', healthRoutes);
+app.use('/api/auth', authRoutes);
 
 // Root route
 app.get('/', (req, res) => {
