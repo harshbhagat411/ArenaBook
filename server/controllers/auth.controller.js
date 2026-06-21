@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs';
 import User from '../models/user.model.js';
 
 /**
@@ -28,11 +29,15 @@ export const registerUser = async (req, res, next) => {
       });
     }
 
-    // Create new user (Storing password in plain text as requested for this step)
+    // Generate salt and hash the password using bcryptjs
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create new user with hashed password
     const newUser = new User({
       name: name.trim(),
       email: trimmedEmail,
-      password: password // Plain text password (bcrypt is in Step 2)
+      password: hashedPassword
     });
 
     // Save user in MongoDB
