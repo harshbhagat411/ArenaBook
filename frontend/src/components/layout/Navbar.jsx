@@ -1,15 +1,32 @@
 import React, { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import Container from '../common/Container';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { isAuthenticated, logout, user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    closeMobileMenu();
+    navigate('/login');
+  };
 
   const navLinks = [
     { path: '/', label: 'Home' },
     { path: '/about', label: 'About' },
     { path: '/contact', label: 'Contact' },
   ];
+
+  // Dynamically add authenticated links
+  if (isAuthenticated) {
+    navLinks.push(
+      { path: '/bookings', label: 'Bookings' },
+      { path: '/profile', label: 'Profile' }
+    );
+  }
 
   const authLinks = [
     { path: '/login', label: 'Login' },
@@ -59,21 +76,35 @@ export default function Navbar() {
             ))}
           </nav>
 
-          {/* Desktop Auth Links */}
+          {/* Desktop Auth/Logout Links */}
           <div className="hidden md:flex items-center gap-4">
-            {authLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={
-                  link.primary
-                    ? 'px-4 py-2 text-sm font-semibold rounded-lg bg-emerald-500 text-slate-950 hover:bg-emerald-400 transition shadow-lg shadow-emerald-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white'
-                    : 'text-sm font-medium text-slate-400 hover:text-emerald-400 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded px-2 py-1'
-                }
-              >
-                {link.label}
-              </Link>
-            ))}
+            {isAuthenticated ? (
+              <>
+                <span className="text-sm font-medium text-slate-400">
+                  Hi, {user?.name || 'User'}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="px-4 py-2 text-sm font-semibold rounded-lg border border-slate-800 text-slate-300 hover:border-slate-700 hover:text-white transition focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 cursor-pointer"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              authLinks.map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={
+                    link.primary
+                      ? 'px-4 py-2 text-sm font-semibold rounded-lg bg-emerald-500 text-slate-950 hover:bg-emerald-400 transition shadow-lg shadow-emerald-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white'
+                      : 'text-sm font-medium text-slate-400 hover:text-emerald-400 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded px-2 py-1'
+                  }
+                >
+                  {link.label}
+                </Link>
+              ))
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -84,11 +115,11 @@ export default function Navbar() {
             aria-controls="mobile-nav-panel"
             aria-label="Toggle navigation menu"
           >
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24">
               {isMobileMenuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} stroke="currentColor" d="M6 18L18 6M6 6l12 12" />
               ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} stroke="currentColor" d="M4 6h16M4 12h16M4 18h16" />
               )}
             </svg>
           </button>
@@ -121,20 +152,34 @@ export default function Navbar() {
         </nav>
         <hr className="border-slate-900" />
         <div className="flex flex-col gap-4">
-          {authLinks.map((link) => (
-            <Link
-              key={link.path}
-              to={link.path}
-              onClick={closeMobileMenu}
-              className={
-                link.primary
-                  ? 'w-full py-2.5 text-center text-sm font-semibold rounded-lg bg-emerald-500 text-slate-950 hover:bg-emerald-400 transition shadow-lg shadow-emerald-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white'
-                  : 'w-full py-2.5 text-center text-sm font-medium text-slate-400 hover:text-emerald-400 transition border border-slate-800 rounded-lg hover:border-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500'
-              }
-            >
-              {link.label}
-            </Link>
-          ))}
+          {isAuthenticated ? (
+            <>
+              <div className="text-sm font-medium text-slate-400 px-2">
+                Logged in as: <span className="text-white">{user?.email}</span>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="w-full py-2.5 text-center text-sm font-semibold rounded-lg border border-slate-800 text-slate-300 hover:border-slate-700 hover:text-white transition focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 cursor-pointer"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            authLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                onClick={closeMobileMenu}
+                className={
+                  link.primary
+                    ? 'w-full py-2.5 text-center text-sm font-semibold rounded-lg bg-emerald-500 text-slate-950 hover:bg-emerald-400 transition shadow-lg shadow-emerald-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white'
+                    : 'w-full py-2.5 text-center text-sm font-medium text-slate-400 hover:text-emerald-400 transition border border-slate-800 rounded-lg hover:border-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500'
+                }
+              >
+                {link.label}
+              </Link>
+            ))
+          )}
         </div>
       </div>
     </header>

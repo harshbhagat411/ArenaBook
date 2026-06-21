@@ -8,6 +8,8 @@ const About = lazy(() => import('../pages/About'));
 const Contact = lazy(() => import('../pages/Contact'));
 const Login = lazy(() => import('../pages/Login'));
 const Register = lazy(() => import('../pages/Register'));
+const Profile = lazy(() => import('../pages/Profile'));
+const Bookings = lazy(() => import('../pages/Bookings'));
 const NotFound = lazy(() => import('../pages/NotFound'));
 
 export const routesConfig = [
@@ -24,6 +26,8 @@ export const routesConfig = [
       { path: 'contact', element: <Contact /> },
       { path: 'login', element: <Login /> },
       { path: 'register', element: <Register /> },
+      { path: 'profile', element: <Profile /> },
+      { path: 'bookings', element: <Bookings /> },
       { path: '*', element: <NotFound /> },
     ],
   },
