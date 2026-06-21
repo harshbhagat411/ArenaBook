@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import User from '../models/user.model.js';
+import generateToken from '../utils/generateToken.js';
 
 /**
  * @desc    Register a new user
@@ -96,10 +97,14 @@ export const loginUser = async (req, res, next) => {
       });
     }
 
+    // Generate JWT token
+    const token = generateToken(user);
+
     // Return success response with status 200 OK
     return res.status(200).json({
       success: true,
       message: 'Login successful',
+      token,
       data: {
         _id: user._id,
         name: user.name,
