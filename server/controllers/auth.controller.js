@@ -117,3 +117,20 @@ export const loginUser = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Test protected route
+ * @route   GET /api/auth/test
+ * @access  Protected (Requires JWT)
+ */
+export const testController = async (req, res, next) => {
+  try {
+    return res.status(200).json({
+      success: true,
+      message: 'Protected route accessed successfully',
+      user: req.user
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
