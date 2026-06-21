@@ -134,3 +134,28 @@ export const testController = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Get current user profile
+ * @route   GET /api/auth/me
+ * @access  Protected (Requires JWT)
+ */
+export const getCurrentUser = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.userId).select('-password');
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: user
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
